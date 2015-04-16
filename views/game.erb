@@ -20,14 +20,6 @@
     </p>
   <% end %>
   
-  <% if @dealer_turn %>
-    <form action="/game/dealer/hit" method="post">
-      <button class="btn btn-large btn-primary" type="submit">
-        Add a Card to the Dealer's hand?
-      </button>
-    </form>
-  <% end %>
-  
   <div class="well" id="player_area">
     <h4><%= "#{session[:player_name]}'s cards:" %></h4>
     <% session[:player_hand].each do |card| %>
@@ -58,10 +50,10 @@
   <% session[:money] -= session[:bet] if @error %>
   <!-- -->
   <% if @show_hit_or_stay %>
-    <form id="hit_form" action="/game/player/hit" method="post">
+    <form id="hit_form" action="/game/player-hit" method="post">
       <button class="btn btn-large btn-primary" type="submit">Hit</button>
     </form>
-    <form id="stay_form" action="/game/player/stay" method="post">
+    <form id="stay_form" action="/game_state" method="get">
       <button class="btn btn-large btn-inverse" type="submit">Stay</button>
     </form>
   <% end %>

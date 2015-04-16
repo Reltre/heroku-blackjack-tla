@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'pry'
+require 'json'
 
 use Rack::Session::Cookie, :key => 'rack.session',
                            :path => '/',
@@ -53,6 +54,10 @@ helpers do
     end
   end
 
+  def deal_card(hand)
+    session[hand] << session[:deck].pop
+  end
+
   def blackjack?(cards)
     cards.size == 2 && calculate_total(cards) == BLACKJACK_AMOUNT
   end
@@ -91,19 +96,20 @@ post '/new_player' do
 end
 
 get '/bet' do 
-  #session[:bet] = nil
+  session[:bet_amount] = nil
   erb :bet_form
 end
 
+
 post '/bet' do
-  if params[:bet].nil? || params[:bet].to_i <= 0
+  if params[:bet_amount].nil? || params[:bet_amount].to_i <= 0
     @error = "Please enter a bet amount."
-  elsif params[:bet].to_i > session[:money] 
+  elsif params[:bet_amount].to_i > session[:money] 
     @error = "Bet amount cannot be greater than your
     current funds: #{session[:money]}"
     halt erb(:bet)
   else
-    session[:bet] = params[:bet].to_i  
+    session[:bet] = params[:bet_amount].to_i  
   end 
   redirect '/game'
 end
@@ -114,11 +120,25 @@ get '/game' do
   session[:deck] = suits.product(values).shuffle!
   session[:player_hand] = []
   session[:dealer_hand] = []
-  session[:dealer_hand] << session[:deck].pop
-  session[:player_hand] << session[:deck].pop
-  session[:dealer_hand] << session[:deck].pop
-  session[:player_hand] << session[:deck].pop
+  deal_card(:dealer_hand)
+  deal_card(:player_hand)
+  deal_card(:dealer_hand)
+  deal_card(:player_hand)
   erb :game
+end
+
+get '/game_state' do 
+  @show_card_cover = false
+  @show_hit_or_stay = false
+  @info = "You decided to stay"
+  dealer_total = calculate_total(session[:dealer_hand])
+
+  if (dealer_total >= DEALER_HIT_MIN) &&
+   (dealer_total <= BLACKJACK_AMOUNT || blackjack?(session[:dealer_hand]))
+    redirect '/game/comparison'
+  else
+    erb :game, :layout => !request.xhr? 
+  end
 end
 
 
@@ -129,8 +149,8 @@ end
 # end
 
 #Implement this in JS
-post '/game/player/hit' do 
-  session[:player_hand] << session[:deck].pop   
+post '/game/player-hit' do 
+  deal_card(:player_hand) 
   if calculate_total(session[:player_hand]) > BLACKJACK_AMOUNT
     @error = 
     "Sorry,#{session[:player_name]}
@@ -142,36 +162,33 @@ post '/game/player/hit' do
   end
   erb :game, :layout => !request.xhr? 
 end
-#Implement this in JS
-post '/game/player/stay' do
-  redirect '/game/dealer'
+
+get '/game/stats' do
+  content_type :json
+  calculate_total(session[:dealer_hand]).to_json
 end
 
 #Implement this in JS
-get '/game/dealer' do
+post '/game/dealer-hit' do
+  dealer_total = calculate_total(session[:dealer_hand])
   @show_card_cover = false
   @show_hit_or_stay = false
   @show_dealer_total = true
   @dealer_turn = true  
   @info = "You decided to stay"
   @show_only_player_total = true
-  dealer_total = calculate_total(session[:dealer_hand])
- 
+  deal_card(:dealer_hand)
+
   if dealer_total > BLACKJACK_AMOUNT
     @success = "The Dealer has busted, #{session[:player_name]} wins!"
     @dealer_turn = false
     halt erb(:game)
   elsif (dealer_total >= DEALER_HIT_MIN) &&
-   (dealer_total <= BLACKJACK_AMOUNT || @blackjack)
+   (dealer_total <= BLACKJACK_AMOUNT || blackjack?(session[:dealer_hand]))
     redirect '/game/comparison'
   end
-
-  erb :game, :layout => !request.xhr? 
-end
-
-post '/game/dealer/hit' do
-  session[:dealer_hand] << session[:deck].pop
-  redirect '/game/dealer'
+  
+  erb :game, :layout => !request.xhr?
 end
 
 #Implement this in JS()
