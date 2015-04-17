@@ -128,17 +128,23 @@ get '/game' do
 end
 
 get '/game_state' do 
+  dealer_total = calculate_total(session[:dealer_hand])
   @show_card_cover = false
   @show_hit_or_stay = false
+  @show_dealer_total = true
+  @dealer_turn = true  
   @info = "You decided to stay"
-  dealer_total = calculate_total(session[:dealer_hand])
+  @show_only_player_total = true
 
-  if (dealer_total >= DEALER_HIT_MIN) &&
+  if dealer_total > BLACKJACK_AMOUNT
+    @success = "The Dealer has busted, #{session[:player_name]} wins!"
+    @dealer_turn = false
+    halt erb(:game)
+  elsif (dealer_total >= DEALER_HIT_MIN) &&
    (dealer_total <= BLACKJACK_AMOUNT || blackjack?(session[:dealer_hand]))
     redirect '/game/comparison'
-  else
-    erb :game, :layout => !request.xhr? 
   end
+  erb :game, :layout => !request.xhr? 
 end
 
 
@@ -163,32 +169,15 @@ post '/game/player-hit' do
   erb :game, :layout => !request.xhr? 
 end
 
-get '/game/stats' do
+get '/game/stats.json' do
   content_type :json
   calculate_total(session[:dealer_hand]).to_json
 end
 
 #Implement this in JS
 post '/game/dealer-hit' do
-  dealer_total = calculate_total(session[:dealer_hand])
-  @show_card_cover = false
-  @show_hit_or_stay = false
-  @show_dealer_total = true
-  @dealer_turn = true  
-  @info = "You decided to stay"
-  @show_only_player_total = true
   deal_card(:dealer_hand)
-
-  if dealer_total > BLACKJACK_AMOUNT
-    @success = "The Dealer has busted, #{session[:player_name]} wins!"
-    @dealer_turn = false
-    halt erb(:game)
-  elsif (dealer_total >= DEALER_HIT_MIN) &&
-   (dealer_total <= BLACKJACK_AMOUNT || blackjack?(session[:dealer_hand]))
-    redirect '/game/comparison'
-  end
-  
-  erb :game, :layout => !request.xhr?
+  redirect 'game_state'
 end
 
 #Implement this in JS()
