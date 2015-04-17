@@ -38,17 +38,7 @@ $(document).ready(function() {
      }).done(function() {
       checkDealerTotal();
     });
+     
     return false; 
-  });
-
-
-  
+  });  
 });
-// index_start = data.indexOf('<div id="game">');
-// index_finish = data.lastIndexOf('</div>');
-// game_layout = data.substring(index_start,index_finish);
-
-
-// success:function(data) {
-// $('#game').html(data);
-//       }   
