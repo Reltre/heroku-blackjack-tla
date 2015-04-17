@@ -101,18 +101,13 @@ get '/bet' do
 end
 
 post '/bet' do
-  if session[:money] <= 0
-    @error="You have no funds to continue play, please start over"
-    redirect '/new_player'
-  end
-  
   if params[:bet_amount].nil? || params[:bet_amount].to_i <= 0
     @error = "Please enter a bet amount."
-    halt erb(:bet)
+    halt erb(:bet_form)
   elsif params[:bet_amount].to_i > session[:money] 
     @error = "Bet amount cannot be greater than your
-    current funds: #{session[:money]}"
-    halt erb(:bet)
+    current funds: $#{session[:money]}"
+    halt erb(:bet_form)
   else
     session[:bet] = params[:bet_amount].to_i  
   end 
@@ -166,9 +161,8 @@ post '/game/player-hit' do
   erb :game, :layout => !request.xhr? 
 end
 
-get '/game/stats.json' do
-  content_type :json
-  calculate_total(session[:dealer_hand]).to_json
+get '/game/stats' do
+  calculate_total(session[:dealer_hand]).to_s
 end
 
 post '/game/dealer-hit' do

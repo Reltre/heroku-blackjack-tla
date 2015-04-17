@@ -9,7 +9,7 @@ function updateDealerHand() {
 }
 
 function checkDealerTotal() {
-  $.getJSON('/game/stats.json').done(function(data) {
+  $.get('/game/stats').done(function(data) {
     if (parseInt(data) < 17) {
       updateDealerHand();
     }
