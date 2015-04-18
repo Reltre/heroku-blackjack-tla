@@ -3,8 +3,8 @@ function updateDealerHand() {
     type: 'POST',
     url: '/game/dealer-hit'
         }).done(function(data){
-          updateDisplay(data)
-          setTimeout(checkDealerTotal(),5000);
+          delay(5000).updateDisplay(data);
+          checkDealerTotal();
         });       
 }
 
