@@ -4,7 +4,7 @@ function updateDealerHand() {
     url: '/game/dealer-hit'
         }).done(function(data){
           updateDisplay(data)
-          setTimeout(checkDealerTotal(),5000);
+          setTimeout(checkDealerTotal(),7000);
         });       
 }
 
