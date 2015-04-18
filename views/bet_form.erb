@@ -1,7 +1,0 @@
-<h3><%= "Hello #{session[:player_name]}, please place your bet." %></h5>
-<p><%= "You currently have $#{session[:money]}." %></p>
-
-<form action = '/bet' method = 'post'>  
-  <input type = 'text' name ='bet_amount'/>
-  <input type = 'submit' class = 'btn' value='Place Bet' id='bet_btn'/>
-</form>
