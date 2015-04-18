@@ -17,7 +17,7 @@ function checkDealerTotal() {
 }
 
 function updateDisplay(data) {
-   $('#game').html(data);
+   $('#game').replaceWith(data);
 }
 
 $(document).ready(function() {
@@ -26,7 +26,7 @@ $(document).ready(function() {
       type: 'POST',
       url: '/game/player-hit'
     }).done(function(data) {
-       $('#game').html(data);
+       $('#game').replaceWith(data);
     });
 
     return false;
@@ -34,7 +34,7 @@ $(document).ready(function() {
 
   $(document).on('click','#stay_form button',function() {
      $.get('/game_state').done(function(data) {
-       $('#game').html(data);
+       $('#game').replaceWith(data);
      }).done(function() {
       checkDealerTotal();
     });

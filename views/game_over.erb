@@ -4,5 +4,11 @@
     Your final winnings are 
     <span class="text-success"><%= "$#{session[:money]}\n" %></span>
   </p>
-  <p>Have a nice day.</p>
-</div>
+  <% if session[:money] <= 0 %>
+    <p>Maybe it's time to take up a new Hobby.</p>
+  <% elsif session[:money] < 500 %>
+    <p>You can hit 'Start Over' for more practice if you want.</p>
+  <% else %>
+    <p>Time to spend that extra cash!</p>
+  <% end %>
+</div> 
