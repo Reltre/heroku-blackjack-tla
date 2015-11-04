@@ -5,7 +5,7 @@ function updateDealerHand() {
         }).done(function(data){
           setTimeout(function() {updateDisplay(data);},3000);
           checkDealerTotal();
-        });       
+        });
 }
 
 function checkDealerTotal() {
@@ -38,7 +38,7 @@ $(document).ready(function() {
      }).done(function() {
       checkDealerTotal();
     });
-     
-    return false; 
-  });  
+
+    return false;
+  });
 });
