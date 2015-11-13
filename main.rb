@@ -158,7 +158,7 @@ post '/game/player-hit' do
     @round_over = true
     halt erb(:game)
   end
-  redirect_to 'game_state'
+  erb :game, layout: false
 end
 
 get '/game/stats' do
@@ -167,7 +167,7 @@ end
 
 post '/game/dealer-hit' do
   deal_card(:dealer_hand)
-  redirect 'game_state'
+  redirect '/game_state'
 end
 
 #Implement this in JS()

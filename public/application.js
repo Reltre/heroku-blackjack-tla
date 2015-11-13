@@ -1,3 +1,9 @@
+
+$(document).ready(function() {
+  playerHit();
+  playerStay();
+});
+
 function updateDealerHand() {
   $.ajax({
     type: 'POST',
@@ -20,25 +26,25 @@ function updateDisplay(data) {
    $('#game').replaceWith(data);
 }
 
-$(document).ready(function() {
+function playerHit() {
   $(document).on('click','#hit_form button',function() {
-    $.ajax({
-      type: 'POST',
-      url: '/game/player-hit'
-    }).done(function(data) {
-       $('#game').replaceWith(data);
+    $.post('/game/player-hit').done(function(data) {
+        updateDisplay(data);
     });
 
     return false;
   });
 
+}
+
+function playerStay() {
   $(document).on('click','#stay_form button',function() {
      $.get('/game_state').done(function(data) {
-       $('#game').replaceWith(data);
+        updateDisplay(data);
      }).done(function() {
       checkDealerTotal();
     });
 
     return false;
   });
-});
+}
